@@ -14,7 +14,7 @@ function createWindow () {
   })
 
   // and load the index.html of the app.
-  mainWindow.loadURL('http://192.168.0.202/app/home')
+  mainWindow.loadFile('index.html')
   //mainWindow.setFullScreen(true)
   mainWindow.maximize()
   // Open the DevTools.
