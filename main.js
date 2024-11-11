@@ -8,11 +8,47 @@ function createWindow () {
     width: 800,
     height: 600,
     frame: false,
-    roundedCorners: false,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      // Disable default keyboard shortcuts
+      contextIsolation: true,
+      enableRemoteModule: false,
+      nodeIntegration: false,
+      webSecurity: true,
+      // Add this line to disable default shortcuts
+      additionalArguments: ['--disable-dev-shm-usage']
     }
   })
+  
+  // Prevent default shortcuts
+  mainWindow.webContents.on('before-input-event', (event, input) => {
+    if (input.type === 'keyDown') {
+      // Disable F12 (DevTools)
+      if (input.key === 'F12') {
+        event.preventDefault();
+      }
+      // Disable Ctrl+Shift+I (DevTools)
+      if (input.control && input.shift && input.key === 'I') {
+        event.preventDefault();
+      }
+      // Disable Ctrl+N (New Window)
+      if (input.control && input.key === 'N') {
+        event.preventDefault();
+      }
+      // Disable Ctrl+T (New Tab)
+      if (input.control && input.key === 'T') {
+        event.preventDefault();
+      }
+      // Disable Ctrl+W (Close Tab)
+      if (input.control && input.key === 'W') {
+        event.preventDefault();
+      }
+      // Disable Ctrl+R (Reload)
+      if (input.control && input.key === 'R') {
+        event.preventDefault();
+      }
+    }
+  });
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
