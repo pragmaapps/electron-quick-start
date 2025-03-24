@@ -8,6 +8,7 @@ function createWindow () {
     width: 800,
     height: 600,
     frame: false,
+    kiosk: true, // Ensure kiosk mode is enabled for the main window
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       // Disable default keyboard shortcuts
@@ -20,6 +21,24 @@ function createWindow () {
     }
   })
   
+  // Handle new window creation
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    console.log('Opening URL:', url); // Log the URL being opened
+    return {
+      action: 'allow',
+      overrideBrowserWindowOptions: {
+        width: 800,
+        height: 600,
+        frame: true, // Enable window frame for controls
+        resizable: true, // Allow resizing
+        webPreferences: {
+          nodeIntegration: false,
+          contextIsolation: true
+        }
+      }
+    };
+  });
+
   // Prevent default shortcuts
   mainWindow.webContents.on('before-input-event', (event, input) => {
     if (input.type === 'keyDown') {
