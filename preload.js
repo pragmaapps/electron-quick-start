@@ -16,3 +16,10 @@ window.addEventListener('DOMContentLoaded', () => {
     replaceText(`${type}-version`, process.versions[type])
   }
 })
+
+const { contextBridge, ipcRenderer } = require('electron');
+
+// Expose a safe API to the renderer process
+contextBridge.exposeInMainWorld('electron', {
+  openNewWindow: (url, features) => ipcRenderer.send('create-new-window', { url, features })
+});

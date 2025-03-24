@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('node:path')
 
 function createWindow () {
@@ -89,6 +89,37 @@ function createWindow () {
   mainWindow.maximize()
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
+
+  // Listen for new window creation requests from the renderer process
+  ipcMain.on('create-new-window', (event, { url, features }) => {
+    console.log('[IPC]: Received request to open URL:', url);
+
+    // Parse the features string
+    const featurePairs = features.split(',');
+    const featureObject = {};
+    featurePairs.forEach(pair => {
+      const [key, value] = pair.split('=');
+      featureObject[key.trim()] = parseInt(value.trim(), 10);
+    });
+
+    const { left, top, width, height } = featureObject;
+
+    // Create a new window with the specified options
+    const newWindow = new BrowserWindow({
+      width: width || 800,
+      height: height || 600,
+      x: left,
+      y: top,
+      frame: true,
+      resizable: true,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true
+      }
+    });
+
+    newWindow.loadURL(url);
+  });
 }
 
 // This method will be called when Electron has finished
