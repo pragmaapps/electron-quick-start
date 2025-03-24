@@ -90,8 +90,34 @@ function createWindow () {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
+
+  // Function to open a popup window for external URL
+const openPopup = (url) => {
+  console.log('[IPC][open popup]: Received request to open URL:', url);
+  const popupWindow = new BrowserWindow({
+    width: 400,
+    height: 400,
+    parent: mainWindow, // Remove `modal: true` so it acts independently
+    resizable: true, // Allow resizing
+    movable: true, // Allow moving
+    show: false, // Hide until fully loaded
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+
+  popupWindow.loadURL(url);
+  popupWindow.once('ready-to-show', () => popupWindow.show());
+};
+
+// Listen for request from React to open URL in popup
+ipcMain.on('create-new-window', (event, url) => {
+  openPopup(url);
+});
+
   // Listen for new window creation requests from the renderer process
-  ipcMain.on('create-new-window', (event, { url, features }) => {
+  ipcMain.on('create-new-window-bk', (event, { url, features }) => {
     console.log('[IPC]: Received request to open URL:', url);
 
     // Parse the features string
