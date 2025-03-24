@@ -22,13 +22,17 @@ function createWindow () {
   })
   
   // Handle new window creation
-  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    console.log('Opening URL:', url); // Log the URL being opened
+  mainWindow.webContents.setWindowOpenHandler(({ url, features }) => {
+    console.log('[Kiosk Mode]: Opening URL:', url); // Log the URL being opened
+    const { left, top, width, height } = features; // Extract features
+    console.log('[Kiosk Mode]: URL features:', features); // Log the URL being opened
     return {
       action: 'allow',
       overrideBrowserWindowOptions: {
-        width: 800,
-        height: 600,
+        width: width || 800, // Use provided width or default
+        height: height || 600, // Use provided height or default
+        x: left, // Set window position
+        y: top, // Set window position
         frame: true, // Enable window frame for controls
         resizable: true, // Allow resizing
         webPreferences: {
