@@ -92,8 +92,9 @@ function createWindow () {
 
 
   // Function to open a popup window for external URL
-const openPopup = (url) => {
+const openPopup = (url,features) => {
   console.log('[IPC][open popup]: Received request to open URL:', url);
+  console.log('[IPC][open popup]: Received request to open URL features:', features);
   const popupWindow = new BrowserWindow({
     width: 400,
     height: 400,
@@ -112,8 +113,8 @@ const openPopup = (url) => {
 };
 
 // Listen for request from React to open URL in popup
-ipcMain.on('create-new-window', (event, url) => {
-  openPopup(url);
+ipcMain.on('create-new-window', (event, { url, features }) => {
+  openPopup(url, features);
 });
 
   // Listen for new window creation requests from the renderer process
