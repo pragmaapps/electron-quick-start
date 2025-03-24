@@ -24,8 +24,18 @@ function createWindow () {
   // Handle new window creation
   mainWindow.webContents.setWindowOpenHandler(({ url, features }) => {
     console.log('[Kiosk Mode]: Opening URL:', url); // Log the URL being opened
-    const { left, top, width, height } = features; // Extract features
-    console.log('[Kiosk Mode]: URL features:', features); // Log the URL being opened
+
+    // Parse the features string
+    const featurePairs = features.split(',');
+    const featureObject = {};
+    featurePairs.forEach(pair => {
+      const [key, value] = pair.split('=');
+      featureObject[key.trim()] = parseInt(value.trim(), 10);
+    });
+
+    const { left, top, width, height } = featureObject; // Extract features
+    console.log('[Kiosk Mode]: Parsed URL features:', featureObject); // Log the parsed features
+
     return {
       action: 'allow',
       overrideBrowserWindowOptions: {
