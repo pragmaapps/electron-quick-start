@@ -53,8 +53,8 @@ function createWindow () {
   });
 
   // and load the index.html of the app.
-  //mainWindow.loadFile('index.html')
-  mainWindow.loadURL('http://192.168.0.100')
+  mainWindow.loadFile('index.html')
+  //mainWindow.loadURL('http://192.168.0.100')
   //mainWindow.setFullScreen(true)
   mainWindow.maximize()
   // Open the DevTools.
@@ -98,26 +98,17 @@ function createWindow () {
       autoHideMenuBar: false,
       show: false // Don't show until ready-to-show
     });
-    
-    // Set window bounds again after creation
-    popupWindow.setBounds({ 
-      x: left, 
-      y: top, 
-      width, 
-      height 
-    });
-    
     popupWindow.loadURL(url);
     popupWindow.once('ready-to-show', () => {
+      let { width, height } = screen.getPrimaryDisplay().workAreaSize;
       popupWindow.show();
       // Set bounds one more time after showing
       setTimeout(() => {
         popupWindow.setBounds({ 
-          x: 200, 
-          y: 200, 
-          width:700,
-          height:400 
-           
+          x: 20,
+          y: 20, 
+          width:width-20,
+          height:height-20
         });
         popupWindow.setResizable(true);
         popupWindow.setMovable(true);
