@@ -85,6 +85,113 @@ function createWindow () {
       resizable: true,
       movable: true,
       alwaysOnTop: false,
+      type: 'normal',
+      // Add these important window management options
+      titleBarStyle: 'default',
+      titleBarOverlay: false,
+      fullscreenable: false,
+      minimizable: true,
+      maximizable: true,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true
+      }
+    });
+    popupWindow.loadURL(url);
+    // Force enable window controls
+    popupWindow.setWindowButtonVisibility(true);
+    
+    popupWindow.once('ready-to-show', () => {
+      popupWindow.show();
+      
+      // Enhanced window control setup
+      setTimeout(() => {
+        // Set initial bounds
+        popupWindow.setBounds({ 
+          x: 20,
+          y: 20, 
+          width: width-20,
+          height: height-20
+        });
+    
+        // Force window properties with multiple approaches
+        popupWindow.webContents.executeJavaScript(`
+          document.documentElement.style.userSelect = 'auto';
+          document.documentElement.style.webkitUserSelect = 'auto';
+          document.documentElement.style.webkitAppRegion = 'no-drag';
+        `);
+    
+        // Enable all window controls explicitly
+        popupWindow.setResizable(true);
+        popupWindow.setMovable(true);
+        popupWindow.setAlwaysOnTop(false);
+        popupWindow.setKiosk(false);
+        
+        // Force update window features
+        popupWindow.setMinimizable(true);
+        popupWindow.setMaximizable(true);
+        
+        // Add a small delay and reapply settings
+        setTimeout(() => {
+          popupWindow.setResizable(true);
+          popupWindow.setMovable(true);
+          // Force window manager to reconsider window properties
+          const bounds = popupWindow.getBounds();
+          popupWindow.setBounds({...bounds, width: bounds.width + 1});
+          popupWindow.setBounds(bounds);
+        }, 100);
+      }, 500);
+    });
+    
+    // Handle window state changes
+    popupWindow.on('resize', () => {
+      console.log('resize called');
+      popupWindow.setResizable(true);
+      popupWindow.setMovable(true);
+    });
+    
+    popupWindow.on('move', () => {
+      console.log('move called');
+      popupWindow.setResizable(true);
+      popupWindow.setMovable(true);
+    });
+    
+    // Optional: Add custom drag region if needed
+    popupWindow.webContents.on('did-finish-load', () => {
+      popupWindow.webContents.executeJavaScript(`
+        const style = document.createElement('style');
+        style.textContent = \`
+          .titlebar {
+            -webkit-app-region: drag;
+            height: 30px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+          }
+        \`;
+        document.head.appendChild(style);
+        
+        const titlebar = document.createElement('div');
+        titlebar.className = 'titlebar';
+        document.body.prepend(titlebar);
+      `);
+    });
+
+
+
+
+
+    /*const popupWindow = new BrowserWindow({
+      width,
+      height,
+      x: 20,
+      y: 20,
+      frame: true,
+      kiosk: false,
+      resizable: true,
+      movable: true,
+      alwaysOnTop: false,
       show:false,
       type: 'normal',
       webPreferences: {
@@ -119,16 +226,14 @@ function createWindow () {
         // Don't prevent the resize
         return true;
       });
-    }, 800);
+    }, 800);*/
   };
 
   // Listen for request from React to open URL in popup
   ipcMain.on('create-new-window', (event, { url, features }) => {
     openPopup(url, features);
   });
-
 }
-
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
