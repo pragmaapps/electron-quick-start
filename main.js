@@ -66,55 +66,48 @@ function createWindow () {
     console.log('[IPC][open popup]: Received request to open URL:', url);
     console.log('[IPC][open popup]: Received request to open URL features:', features);
   
-    // Parse features string
-    const featureObject = {};
-    if (features) {
-      features.split(',').forEach(pair => {
-        const [key, value] = pair.split('=');
-        featureObject[key.trim()] = parseInt(value.trim(), 10);
-      });
-    }
-  
-    const { width = 400, height = 400, left, top } = featureObject;
+    let { width, height } = screen.getPrimaryDisplay().workAreaSize;
     const popupWindow = new BrowserWindow({
-      width,
-      height,
-      x: left,
-      y: top,
+      width: Math.min(width, 1200), // Set a reasonable max width
+      height: Math.min(height, 800), // Set a reasonable max height
+      x: 20,
+      y: 20,
       frame: true,
       kiosk: false,
       resizable: true,
       movable: true,
       alwaysOnTop: false,
+      parent: null,
       type: 'normal',
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true
       },
-      // Add these Wayland-specific options
-      backgroundColor: '#ffffff',
+      // Remove Wayland-specific options that might interfere
       useContentSize: true,
-      titleBarStyle: 'default',
-      autoHideMenuBar: false,
-      show: false // Don't show until ready-to-show
+      autoHideMenuBar: false
     });
+
     popupWindow.loadURL(url);
+    
+    // Remove the setTimeout and set window properties immediately
     popupWindow.once('ready-to-show', () => {
-      let { width, height } = screen.getPrimaryDisplay().workAreaSize;
       popupWindow.show();
-      // Set bounds one more time after showing
-      setTimeout(() => {
-        popupWindow.setBounds({ 
-          x: 20,
-          y: 20, 
-          width:width-20,
-          height:height-20
-        });
-        popupWindow.setResizable(true);
-        popupWindow.setMovable(true);
-        popupWindow.setAlwaysOnTop(false);
-        popupWindow.setKiosk(false);
-      }, 500);
+      popupWindow.setResizable(true);
+      popupWindow.setMovable(true);
+      popupWindow.setBounds({ 
+        x: 20,
+        y: 20, 
+        width: Math.min(width, 1200), // Set a reasonable max width
+        height: Math.min(height, 800) // Set a reasonable max height
+      });
+    });
+
+    // Add event listener to ensure window remains resizable
+    popupWindow.on('will-resize', (event) => {
+      // Don't prevent the resize
+      console.log('resize event is called from will-resize');
+      return true;
     });
   };
 
