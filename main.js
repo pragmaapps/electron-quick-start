@@ -130,16 +130,6 @@ function createWindow () {
         // Force update window features
         popupWindow.setMinimizable(true);
         popupWindow.setMaximizable(true);
-        
-        // Add a small delay and reapply settings
-        setTimeout(() => {
-          popupWindow.setResizable(true);
-          popupWindow.setMovable(true);
-          // Force window manager to reconsider window properties
-          const bounds = popupWindow.getBounds();
-          popupWindow.setBounds({...bounds, width: bounds.width + 1});
-          popupWindow.setBounds(bounds);
-        }, 100);
       }, 500);
     });
     
@@ -155,32 +145,6 @@ function createWindow () {
       popupWindow.setResizable(true);
       popupWindow.setMovable(true);
     });
-    
-    // Optional: Add custom drag region if needed
-    popupWindow.webContents.on('did-finish-load', () => {
-      popupWindow.webContents.executeJavaScript(`
-        const style = document.createElement('style');
-        style.textContent = \`
-          .titlebar {
-            -webkit-app-region: drag;
-            height: 30px;
-            width: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-          }
-        \`;
-        document.head.appendChild(style);
-        
-        const titlebar = document.createElement('div');
-        titlebar.className = 'titlebar';
-        document.body.prepend(titlebar);
-      `);
-    });
-
-
-
-
 
     /*const popupWindow = new BrowserWindow({
       width,
