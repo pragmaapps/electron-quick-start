@@ -1,14 +1,16 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain,screen } = require('electron')
 const path = require('node:path')
 
 function createWindow () {
   // Create the browser window.
+  // Get the primary display's size
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: width,
+    height: height,
     frame: false,
-    kiosk: true, // Ensure kiosk mode is enabled for the main window
+    kiosk: false, // Ensure kiosk mode is enabled for the main window
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       // Disable default keyboard shortcuts
@@ -52,8 +54,9 @@ function createWindow () {
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
+  //mainWindow.loadURL('http://192.168.0.100')
   //mainWindow.setFullScreen(true)
-  mainWindow.maximize()
+  //mainWindow.maximize()
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
@@ -80,16 +83,15 @@ function createWindow () {
       x: left, // Set position if provided
       y: top,  // Set position if provided
       frame: true, // Ensure window controls are visible
+      kiosk: false,
       resizable: true, // Allow resizing
       movable: true, // Allow moving
       alwaysOnTop: false, // Normal window behavior
-      show: false, // Hide until fully loaded
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true
       }
     });
-  
     popupWindow.loadURL(url);
     popupWindow.once('ready-to-show', () => popupWindow.show());
   };
