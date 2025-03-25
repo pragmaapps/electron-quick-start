@@ -20,38 +20,6 @@ function createWindow () {
       additionalArguments: ['--disable-dev-shm-usage']
     }
   })
-  
-  // Handle new window creation
-  mainWindow.webContents.setWindowOpenHandler(({ url, features }) => {
-    console.log('[Kiosk Mode]: Opening URL:', url); // Log the URL being opened
-
-    // Parse the features string
-    const featurePairs = features.split(',');
-    const featureObject = {};
-    featurePairs.forEach(pair => {
-      const [key, value] = pair.split('=');
-      featureObject[key.trim()] = parseInt(value.trim(), 10);
-    });
-
-    const { left, top, width, height } = featureObject; // Extract features
-    console.log('[Kiosk Mode]: Parsed URL features:', featureObject); // Log the parsed features
-
-    return {
-      action: 'allow',
-      overrideBrowserWindowOptions: {
-        width: width || 800, // Use provided width or default
-        height: height || 600, // Use provided height or default
-        x: left, // Set window position
-        y: top, // Set window position
-        frame: true, // Enable window frame for controls
-        resizable: true, // Allow resizing
-        webPreferences: {
-          nodeIntegration: false,
-          contextIsolation: true
-        }
-      }
-    };
-  });
 
   // Prevent default shortcuts
   mainWindow.webContents.on('before-input-event', (event, input) => {
@@ -92,7 +60,7 @@ function createWindow () {
 
 
   // Function to open a popup window for external URL
-const openPopup = (url,features) => {
+/*const openPopup = (url,features) => {
   console.log('[IPC][open popup]: Received request to open URL:', url);
   console.log('[IPC][open popup]: Received request to open URL features:', features);
   const popupWindow = new BrowserWindow({
@@ -110,44 +78,47 @@ const openPopup = (url,features) => {
 
   popupWindow.loadURL(url);
   popupWindow.once('ready-to-show', () => popupWindow.show());
+};*/
+
+const openPopup = (url, features) => {
+  console.log('[IPC][open popup]: Received request to open URL:', url);
+  console.log('[IPC][open popup]: Received request to open URL features:', features);
+
+  // Parse features string
+  const featureObject = {};
+  if (features) {
+    features.split(',').forEach(pair => {
+      const [key, value] = pair.split('=');
+      featureObject[key.trim()] = parseInt(value.trim(), 10);
+    });
+  }
+
+  const { width = 400, height = 400, left, top } = featureObject;
+
+  const popupWindow = new BrowserWindow({
+    width,
+    height,
+    x: left, // Set position if provided
+    y: top,  // Set position if provided
+    frame: true, // Ensure window controls are visible
+    resizable: true, // Allow resizing
+    movable: true, // Allow moving
+    alwaysOnTop: false, // Normal window behavior
+    show: false, // Hide until fully loaded
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+
+  popupWindow.loadURL(url);
+  popupWindow.once('ready-to-show', () => popupWindow.show());
 };
 
 // Listen for request from React to open URL in popup
 ipcMain.on('create-new-window', (event, { url, features }) => {
   openPopup(url, features);
 });
-
-  // Listen for new window creation requests from the renderer process
-  ipcMain.on('create-new-window-bk', (event, { url, features }) => {
-    console.log('[IPC]: Received request to open URL:', url);
-
-    // Parse the features string
-    const featurePairs = features.split(',');
-    const featureObject = {};
-    featurePairs.forEach(pair => {
-      const [key, value] = pair.split('=');
-      featureObject[key.trim()] = parseInt(value.trim(), 10);
-    });
-
-    const { left, top, width, height } = featureObject;
-
-    // Create a new window with the specified options
-    const newWindow = new BrowserWindow({
-      width: width || 800,
-      height: height || 600,
-      x: left,
-      y: top,
-      frame: true,
-      resizable: true,
-      webPreferences: {
-        nodeIntegration: false,
-        contextIsolation: true
-      }
-    });
-
-    newWindow.loadURL(url);
-  });
-}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
