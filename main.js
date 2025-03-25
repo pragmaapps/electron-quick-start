@@ -113,12 +113,17 @@ function createWindow () {
       // Set bounds one more time after showing
       setTimeout(() => {
         popupWindow.setBounds({ 
-          x: left, 
-          y: top, 
-          width, 
-          height 
+          x: 200, 
+          y: 200, 
+          width:700,
+          height:400 
+           
         });
-      }, 1000);
+        popupWindow.setResizable(true);
+        popupWindow.setMovable(true);
+        popupWindow.setAlwaysOnTop(false);
+        popupWindow.setKiosk(false);
+      }, 500);
     });
   };
 
