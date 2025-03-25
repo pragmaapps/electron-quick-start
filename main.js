@@ -53,10 +53,10 @@ function createWindow () {
   });
 
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
-  //mainWindow.loadURL('http://192.168.0.100')
+  //mainWindow.loadFile('index.html')
+  mainWindow.loadURL('http://192.168.0.100')
   //mainWindow.setFullScreen(true)
-  //mainWindow.maximize()
+  mainWindow.maximize()
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
@@ -76,24 +76,50 @@ function createWindow () {
     }
   
     const { width = 400, height = 400, left, top } = featureObject;
-  
     const popupWindow = new BrowserWindow({
       width,
       height,
-      x: left, // Set position if provided
-      y: top,  // Set position if provided
-      frame: true, // Ensure window controls are visible
+      x: left,
+      y: top,
+      frame: true,
       kiosk: false,
-      resizable: true, // Allow resizing
-      movable: true, // Allow moving
-      alwaysOnTop: false, // Normal window behavior
+      resizable: true,
+      movable: true,
+      alwaysOnTop: false,
+      type: 'normal',
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true
-      }
+      },
+      // Add these Wayland-specific options
+      backgroundColor: '#ffffff',
+      useContentSize: true,
+      titleBarStyle: 'default',
+      autoHideMenuBar: false,
+      show: false // Don't show until ready-to-show
     });
+    
+    // Set window bounds again after creation
+    popupWindow.setBounds({ 
+      x: left, 
+      y: top, 
+      width, 
+      height 
+    });
+    
     popupWindow.loadURL(url);
-    popupWindow.once('ready-to-show', () => popupWindow.show());
+    popupWindow.once('ready-to-show', () => {
+      popupWindow.show();
+      // Set bounds one more time after showing
+      setTimeout(() => {
+        popupWindow.setBounds({ 
+          x: left, 
+          y: top, 
+          width, 
+          height 
+        });
+      }, 1000);
+    });
   };
 
   // Listen for request from React to open URL in popup
