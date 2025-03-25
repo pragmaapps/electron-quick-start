@@ -20,7 +20,6 @@ function createWindow () {
       additionalArguments: ['--disable-dev-shm-usage']
     }
   })
-
   // Prevent default shortcuts
   mainWindow.webContents.on('before-input-event', (event, input) => {
     if (input.type === 'keyDown') {
@@ -60,65 +59,47 @@ function createWindow () {
 
 
   // Function to open a popup window for external URL
-/*const openPopup = (url,features) => {
-  console.log('[IPC][open popup]: Received request to open URL:', url);
-  console.log('[IPC][open popup]: Received request to open URL features:', features);
-  const popupWindow = new BrowserWindow({
-    width: 400,
-    height: 400,
-    parent: mainWindow, // Remove `modal: true` so it acts independently
-    resizable: true, // Allow resizing
-    movable: true, // Allow moving
-    show: false, // Hide until fully loaded
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true
+  const openPopup = (url, features) => {
+    console.log('[IPC][open popup]: Received request to open URL:', url);
+    console.log('[IPC][open popup]: Received request to open URL features:', features);
+  
+    // Parse features string
+    const featureObject = {};
+    if (features) {
+      features.split(',').forEach(pair => {
+        const [key, value] = pair.split('=');
+        featureObject[key.trim()] = parseInt(value.trim(), 10);
+      });
     }
-  });
-
-  popupWindow.loadURL(url);
-  popupWindow.once('ready-to-show', () => popupWindow.show());
-};*/
-
-const openPopup = (url, features) => {
-  console.log('[IPC][open popup]: Received request to open URL:', url);
-  console.log('[IPC][open popup]: Received request to open URL features:', features);
-
-  // Parse features string
-  const featureObject = {};
-  if (features) {
-    features.split(',').forEach(pair => {
-      const [key, value] = pair.split('=');
-      featureObject[key.trim()] = parseInt(value.trim(), 10);
+  
+    const { width = 400, height = 400, left, top } = featureObject;
+  
+    const popupWindow = new BrowserWindow({
+      width,
+      height,
+      x: left, // Set position if provided
+      y: top,  // Set position if provided
+      frame: true, // Ensure window controls are visible
+      resizable: true, // Allow resizing
+      movable: true, // Allow moving
+      alwaysOnTop: false, // Normal window behavior
+      show: false, // Hide until fully loaded
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true
+      }
     });
-  }
+  
+    popupWindow.loadURL(url);
+    popupWindow.once('ready-to-show', () => popupWindow.show());
+  };
 
-  const { width = 400, height = 400, left, top } = featureObject;
-
-  const popupWindow = new BrowserWindow({
-    width,
-    height,
-    x: left, // Set position if provided
-    y: top,  // Set position if provided
-    frame: true, // Ensure window controls are visible
-    resizable: true, // Allow resizing
-    movable: true, // Allow moving
-    alwaysOnTop: false, // Normal window behavior
-    show: false, // Hide until fully loaded
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true
-    }
+  // Listen for request from React to open URL in popup
+  ipcMain.on('create-new-window', (event, { url, features }) => {
+    openPopup(url, features);
   });
 
-  popupWindow.loadURL(url);
-  popupWindow.once('ready-to-show', () => popupWindow.show());
-};
-
-// Listen for request from React to open URL in popup
-ipcMain.on('create-new-window', (event, { url, features }) => {
-  openPopup(url, features);
-});
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -141,4 +122,4 @@ app.on('window-all-closed', function () {
 })
 
 // In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+// code. You can also put them in separate files and require them here. 
