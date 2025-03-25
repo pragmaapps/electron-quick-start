@@ -66,10 +66,18 @@ function createWindow () {
     console.log('[IPC][open popup]: Received request to open URL:', url);
     console.log('[IPC][open popup]: Received request to open URL features:', features);
   
+    // Parse features string
+    const featureObject = {};
+    if (features) {
+      features.split(',').forEach(pair => {
+        const [key, value] = pair.split('=');
+        featureObject[key.trim()] = parseInt(value.trim(), 10);
+      });
+    }
     let { width, height } = screen.getPrimaryDisplay().workAreaSize;
     const popupWindow = new BrowserWindow({
-      width: Math.min(width, 1200), // Set a reasonable max width
-      height: Math.min(height, 800), // Set a reasonable max height
+      width,
+      height,
       x: 20,
       y: 20,
       frame: true,
@@ -77,38 +85,41 @@ function createWindow () {
       resizable: true,
       movable: true,
       alwaysOnTop: false,
-      parent: null,
+      show:false,
       type: 'normal',
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true
       },
-      // Remove Wayland-specific options that might interfere
+      // Add these Wayland-specific options
+      backgroundColor: '#000000',
       useContentSize: true,
+      titleBarStyle: 'default',
       autoHideMenuBar: false
     });
-
     popupWindow.loadURL(url);
-    
-    // Remove the setTimeout and set window properties immediately
     popupWindow.once('ready-to-show', () => {
       popupWindow.show();
-      popupWindow.setResizable(true);
-      popupWindow.setMovable(true);
-      popupWindow.setBounds({ 
-        x: 20,
-        y: 20, 
-        width: Math.min(width, 1200), // Set a reasonable max width
-        height: Math.min(height, 800) // Set a reasonable max height
+      // Set bounds one more time after showing
+      setTimeout(() => {
+        popupWindow.setBounds({ 
+          x: 20,
+          y: 20, 
+          width:width-20,
+          height:height-20
+        });
+        popupWindow.setResizable(true);
+        popupWindow.setMovable(true);
+        popupWindow.setAlwaysOnTop(false);
+        popupWindow.setKiosk(false);
+      }, 500);
+    });
+    setTimeout(() => {
+      popupWindow.on('will-resize', (event) => {
+        // Don't prevent the resize
+        return true;
       });
-    });
-
-    // Add event listener to ensure window remains resizable
-    popupWindow.on('will-resize', (event) => {
-      // Don't prevent the resize
-      console.log('resize event is called from will-resize');
-      return true;
-    });
+    }, 800);
   };
 
   // Listen for request from React to open URL in popup
