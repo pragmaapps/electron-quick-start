@@ -74,14 +74,22 @@ function createWindow () {
       y: centerY,
       width: loadingWidth,
       height: loadingHeight,
-      frame: false,
-      alwaysOnTop: true,
-      center: true,
-      show: false,
+      frame: true,
+      kiosk: false,
+      resizable: true,
+      movable: true,
+      alwaysOnTop: false,
+      type: 'normal',
+      show:false, 
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true
-      }
+      },
+      // Add these Wayland-specific options
+      backgroundColor: '#000000',
+      useContentSize: true,
+      titleBarStyle: 'default',
+      autoHideMenuBar: false
     });
 
     // Load a simple HTML loading message
@@ -150,7 +158,7 @@ function createWindow () {
         popupWindow.setMovable(true);
         popupWindow.setAlwaysOnTop(false);
         popupWindow.setKiosk(false);
-      }, 500);
+      }, 200);
     });
   };
 
