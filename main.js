@@ -128,7 +128,7 @@ function createWindow () {
       y: pCenterY,
       width: pLoadingWidth,
       height: pLoadingHeight,
-      frame: true,
+      frame: false,
       kiosk: false,
       resizable: true,
       movable: true,
