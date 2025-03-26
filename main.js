@@ -53,8 +53,8 @@ function createWindow () {
   });
 
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
-  //mainWindow.loadURL('http://192.168.0.100')
+  //mainWindow.loadFile('index.html')
+  mainWindow.loadURL('http://192.168.0.100')
   //mainWindow.setFullScreen(true)
   mainWindow.maximize()
   // Open the DevTools.
@@ -63,6 +63,31 @@ function createWindow () {
 
   // Function to open a popup window for external URL
   const openPopup = (url, features) => {
+     // Create a small loading window
+    const loadingWindow = new BrowserWindow({
+      width: 200,
+      height: 100,
+      frame: false,
+      alwaysOnTop: true,
+      center: true,
+      show: false,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true
+      }
+    });
+
+    // Load a simple HTML loading message
+    loadingWindow.loadFile('loading.html');
+    loadingWindow.once('ready-to-show', () => {
+      setTimeout(() => {
+        loadingWindow.setBounds({ 
+          width:200,
+          height:100
+        });
+        loadingWindow.show();
+      }, 100);
+    });
     console.log('[IPC][open popup]: Received request to open URL:', url);
     console.log('[IPC][open popup]: Received request to open URL features:', features);
   
@@ -74,7 +99,9 @@ function createWindow () {
         featureObject[key.trim()] = parseInt(value.trim(), 10);
       });
     }
+
     let { width, height } = screen.getPrimaryDisplay().workAreaSize;
+
     const popupWindow = new BrowserWindow({
       width,
       height,
@@ -86,6 +113,7 @@ function createWindow () {
       movable: true,
       alwaysOnTop: false,
       type: 'normal',
+      show:false, 
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true
@@ -98,7 +126,7 @@ function createWindow () {
     });
     popupWindow.loadURL(url);
     popupWindow.once('ready-to-show', () => {
-      popupWindow.show();
+      loadingWindow.close();
       // Set bounds one more time after showing
       setTimeout(() => {
         popupWindow.setBounds({ 
@@ -111,6 +139,7 @@ function createWindow () {
         popupWindow.setMovable(true);
         popupWindow.setAlwaysOnTop(false);
         popupWindow.setKiosk(false);
+        popupWindow.show();
       }, 500);
     });
   };
