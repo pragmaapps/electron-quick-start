@@ -80,12 +80,12 @@ function createWindow () {
     // Load a simple HTML loading message
     loadingWindow.loadFile('loading.html');
     loadingWindow.once('ready-to-show', () => {
+      loadingWindow.show();
       setTimeout(() => {
         loadingWindow.setBounds({ 
-          width:200,
-          height:100
+          width:500,
+          height:300
         });
-        loadingWindow.show();
       }, 100);
     });
     console.log('[IPC][open popup]: Received request to open URL:', url);
@@ -127,6 +127,7 @@ function createWindow () {
     popupWindow.loadURL(url);
     popupWindow.once('ready-to-show', () => {
       loadingWindow.close();
+      popupWindow.show();
       // Set bounds one more time after showing
       setTimeout(() => {
         popupWindow.setBounds({ 
@@ -139,7 +140,6 @@ function createWindow () {
         popupWindow.setMovable(true);
         popupWindow.setAlwaysOnTop(false);
         popupWindow.setKiosk(false);
-        popupWindow.show();
       }, 500);
     });
   };
