@@ -149,18 +149,8 @@ function createWindow () {
     popupWindow.once('ready-to-show', () => {
       popupWindow.show();
       loadingWindow.close();
-      popupWindow.setBounds({ 
-        x: pCenterX,
-        y: pCenterY,
-        width: pLoadingWidth,
-        height: pLoadingHeight
-      });
-      popupWindow.setResizable(true);
-      popupWindow.setMovable(true);
-      popupWindow.setAlwaysOnTop(false);
-      popupWindow.setKiosk(false);
       // Set bounds one more time after showing
-      /*setTimeout(() => {
+      setTimeout(() => {
         popupWindow.setBounds({ 
           x: pCenterX,
           y: pCenterY,
@@ -171,7 +161,7 @@ function createWindow () {
         popupWindow.setMovable(true);
         popupWindow.setAlwaysOnTop(false);
         popupWindow.setKiosk(false);
-      }, 100);*/
+      }, 100);
     });
   };
 
