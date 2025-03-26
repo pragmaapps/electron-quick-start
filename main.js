@@ -85,11 +85,15 @@ function createWindow () {
     loadingWindow.once('ready-to-show', () => {
       loadingWindow.show();
       setTimeout(() => {
+        const loadingWidth = 500;
+        const loadingHeight = 300;
+        const centerX = Math.floor((width - loadingWidth) / 2);
+        const centerY = Math.floor((height - loadingHeight) / 2);
         loadingWindow.setBounds({ 
-          x: 20,
-          y: 20,
-          width: 1280,
-          height: 800
+          x: centerX,
+          y: centerY,
+          width: loadingWidth,
+          height: loadingHeight
         });
       }, 300);
     });
@@ -107,8 +111,8 @@ function createWindow () {
 
     const popupWindow = new BrowserWindow({
       width:1280,
-      height:800,
-      x: 20,
+      height:600,
+      x: 50,
       y: 20,
       frame: true,
       kiosk: false,
@@ -134,10 +138,10 @@ function createWindow () {
       // Set bounds one more time after showing
       setTimeout(() => {
         popupWindow.setBounds({ 
-          x: 20,
+          x: 50,
           y: 20, 
           width:1280,
-          height:800
+          height:600
         });
         popupWindow.setResizable(true);
         popupWindow.setMovable(true);
