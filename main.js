@@ -86,78 +86,6 @@ function createWindow () {
       movable: true,
       alwaysOnTop: false,
       type: 'normal',
-      // Add these important window management options
-      titleBarStyle: 'default',
-      titleBarOverlay: false,
-      fullscreenable: false,
-      minimizable: true,
-      maximizable: true,
-      webPreferences: {
-        nodeIntegration: false,
-        contextIsolation: true
-      }
-    });
-    popupWindow.loadURL(url);
-    // Force enable window controls
-    popupWindow.setWindowButtonVisibility(true);
-    
-    popupWindow.once('ready-to-show', () => {
-      popupWindow.show();
-      
-      // Enhanced window control setup
-      setTimeout(() => {
-        // Set initial bounds
-        popupWindow.setBounds({ 
-          x: 20,
-          y: 20, 
-          width: width-20,
-          height: height-20
-        });
-    
-        // Force window properties with multiple approaches
-        popupWindow.webContents.executeJavaScript(`
-          document.documentElement.style.userSelect = 'auto';
-          document.documentElement.style.webkitUserSelect = 'auto';
-          document.documentElement.style.webkitAppRegion = 'no-drag';
-        `);
-    
-        // Enable all window controls explicitly
-        popupWindow.setResizable(true);
-        popupWindow.setMovable(true);
-        popupWindow.setAlwaysOnTop(false);
-        popupWindow.setKiosk(false);
-        
-        // Force update window features
-        popupWindow.setMinimizable(true);
-        popupWindow.setMaximizable(true);
-      }, 500);
-    });
-    
-    // Handle window state changes
-    popupWindow.on('resize', () => {
-      console.log('resize called');
-      popupWindow.setResizable(true);
-      popupWindow.setMovable(true);
-    });
-    
-    popupWindow.on('move', () => {
-      console.log('move called');
-      popupWindow.setResizable(true);
-      popupWindow.setMovable(true);
-    });
-
-    /*const popupWindow = new BrowserWindow({
-      width,
-      height,
-      x: 20,
-      y: 20,
-      frame: true,
-      kiosk: false,
-      resizable: true,
-      movable: true,
-      alwaysOnTop: false,
-      show:false,
-      type: 'normal',
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true
@@ -176,8 +104,8 @@ function createWindow () {
         popupWindow.setBounds({ 
           x: 20,
           y: 20, 
-          width:width-20,
-          height:height-20
+          width:width,
+          height:height
         });
         popupWindow.setResizable(true);
         popupWindow.setMovable(true);
@@ -185,19 +113,15 @@ function createWindow () {
         popupWindow.setKiosk(false);
       }, 500);
     });
-    setTimeout(() => {
-      popupWindow.on('will-resize', (event) => {
-        // Don't prevent the resize
-        return true;
-      });
-    }, 800);*/
   };
 
   // Listen for request from React to open URL in popup
   ipcMain.on('create-new-window', (event, { url, features }) => {
     openPopup(url, features);
   });
+
 }
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
