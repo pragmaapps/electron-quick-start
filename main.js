@@ -63,13 +63,17 @@ function createWindow () {
 
   // Function to open a popup window for external URL
   const openPopup = (url, features) => {
-     // Create a small loading window
-     let { width, height } = screen.getPrimaryDisplay().workAreaSize;
+    // Create a small loading window
+    let { width, height } = screen.getPrimaryDisplay().workAreaSize;
+    const loadingWidth = 1280;
+    const loadingHeight = 600;
+    const centerX = Math.floor((width - loadingWidth) / 2);
+    const centerY = Math.floor((height - loadingHeight) / 2);
     const loadingWindow = new BrowserWindow({
-      width: 1280,
-      height: 800,
-      x: 20,
-      y: 20,
+      x: centerX,
+      y: centerY,
+      width: loadingWidth,
+      height: loadingHeight,
       frame: false,
       alwaysOnTop: true,
       center: true,
@@ -85,17 +89,13 @@ function createWindow () {
     loadingWindow.once('ready-to-show', () => {
       loadingWindow.show();
       setTimeout(() => {
-        const loadingWidth = 500;
-        const loadingHeight = 300;
-        const centerX = Math.floor((width - loadingWidth) / 2);
-        const centerY = Math.floor((height - loadingHeight) / 2);
         loadingWindow.setBounds({ 
           x: centerX,
           y: centerY,
           width: loadingWidth,
           height: loadingHeight
         });
-      }, 300);
+      }, 200);
     });
     console.log('[IPC][open popup]: Received request to open URL:', url);
     console.log('[IPC][open popup]: Received request to open URL features:', features);
@@ -108,12 +108,15 @@ function createWindow () {
         featureObject[key.trim()] = parseInt(value.trim(), 10);
       });
     }
-
+    const pLoadingWidth = 1280;
+    const pLoadingHeight = 600;
+    const pCenterX = Math.floor((width - pLoadingWidth) / 2);
+    const pCenterY = Math.floor((height - pLoadingHeight) / 2);
     const popupWindow = new BrowserWindow({
-      width:1280,
-      height:600,
-      x: 50,
-      y: 20,
+      x: pCenterX,
+      y: pCenterY,
+      width: pLoadingWidth,
+      height: pLoadingHeight,
       frame: true,
       kiosk: false,
       resizable: true,
@@ -138,16 +141,16 @@ function createWindow () {
       // Set bounds one more time after showing
       setTimeout(() => {
         popupWindow.setBounds({ 
-          x: 50,
-          y: 20, 
-          width:1280,
-          height:600
+          x: pCenterX,
+          y: pCenterY,
+          width: pLoadingWidth,
+          height: pLoadingHeight
         });
         popupWindow.setResizable(true);
         popupWindow.setMovable(true);
         popupWindow.setAlwaysOnTop(false);
         popupWindow.setKiosk(false);
-      }, 800);
+      }, 500);
     });
   };
 
