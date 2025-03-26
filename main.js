@@ -65,8 +65,10 @@ function createWindow () {
   const openPopup = (url, features) => {
     // Create a small loading window
     let { width, height } = screen.getPrimaryDisplay().workAreaSize;
-    const loadingWidth = 400;
-    const loadingHeight = 200;
+    console.log("width", width);
+    console.log("height", height);
+    const loadingWidth = 1280;
+    const loadingHeight = 600;
     const centerX = Math.floor((width - loadingWidth) / 2);
     const centerY = Math.floor((height - loadingHeight) / 2);
     const loadingWindow = new BrowserWindow({
@@ -74,16 +76,15 @@ function createWindow () {
       y: centerY,
       width: loadingWidth,
       height: loadingHeight,
-      frame: false,
+      frame: true,
       kiosk: false,
-      resizable: true,
-      movable: true,
       alwaysOnTop: false,
       type: 'normal',
       show:false, 
       webPreferences: {
         nodeIntegration: false,
-        contextIsolation: true
+        contextIsolation: true,
+        scrollBounce: false
       },
       // Add these Wayland-specific options
       backgroundColor: '#000000',
@@ -103,8 +104,6 @@ function createWindow () {
           width: loadingWidth,
           height: loadingHeight
         });
-        loadingWindow.setResizable(true);
-        loadingWindow.setMovable(true);
         loadingWindow.setAlwaysOnTop(false);
         loadingWindow.setKiosk(false);
       }, 100);
@@ -148,10 +147,20 @@ function createWindow () {
     });
     popupWindow.loadURL(url);
     popupWindow.once('ready-to-show', () => {
-      loadingWindow.close();
       popupWindow.show();
+      loadingWindow.close();
+      popupWindow.setBounds({ 
+        x: pCenterX,
+        y: pCenterY,
+        width: pLoadingWidth,
+        height: pLoadingHeight
+      });
+      popupWindow.setResizable(true);
+      popupWindow.setMovable(true);
+      popupWindow.setAlwaysOnTop(false);
+      popupWindow.setKiosk(false);
       // Set bounds one more time after showing
-      setTimeout(() => {
+      /*setTimeout(() => {
         popupWindow.setBounds({ 
           x: pCenterX,
           y: pCenterY,
@@ -162,7 +171,7 @@ function createWindow () {
         popupWindow.setMovable(true);
         popupWindow.setAlwaysOnTop(false);
         popupWindow.setKiosk(false);
-      }, 100);
+      }, 100);*/
     });
   };
 
