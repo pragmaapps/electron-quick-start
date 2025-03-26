@@ -66,8 +66,8 @@ function createWindow () {
      // Create a small loading window
      let { width, height } = screen.getPrimaryDisplay().workAreaSize;
     const loadingWindow = new BrowserWindow({
-      width: width,
-      height: height,
+      width: 1280,
+      height: 800,
       x: 20,
       y: 20,
       frame: false,
@@ -88,10 +88,10 @@ function createWindow () {
         loadingWindow.setBounds({ 
           x: 20,
           y: 20,
-          width: width,
-          height: height
+          width: 1280,
+          height: 800
         });
-      }, 100);
+      }, 300);
     });
     console.log('[IPC][open popup]: Received request to open URL:', url);
     console.log('[IPC][open popup]: Received request to open URL features:', features);
@@ -106,8 +106,8 @@ function createWindow () {
     }
 
     const popupWindow = new BrowserWindow({
-      width,
-      height,
+      width:1280,
+      height:800,
       x: 20,
       y: 20,
       frame: true,
@@ -136,8 +136,8 @@ function createWindow () {
         popupWindow.setBounds({ 
           x: 20,
           y: 20, 
-          width:width,
-          height:height
+          width:1280,
+          height:800
         });
         popupWindow.setResizable(true);
         popupWindow.setMovable(true);
