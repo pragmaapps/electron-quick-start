@@ -65,8 +65,8 @@ function createWindow () {
   const openPopup = (url, features) => {
     // Create a small loading window
     let { width, height } = screen.getPrimaryDisplay().workAreaSize;
-    const loadingWidth = 1280;
-    const loadingHeight = 600;
+    const loadingWidth = 200;
+    const loadingHeight = 100;
     const centerX = Math.floor((width - loadingWidth) / 2);
     const centerY = Math.floor((height - loadingHeight) / 2);
     const loadingWindow = new BrowserWindow({
@@ -103,6 +103,10 @@ function createWindow () {
           width: loadingWidth,
           height: loadingHeight
         });
+        loadingWindow.setResizable(true);
+        loadingWindow.setMovable(true);
+        loadingWindow.setAlwaysOnTop(false);
+        loadingWindow.setKiosk(false);
       }, 200);
     });
     console.log('[IPC][open popup]: Received request to open URL:', url);
@@ -120,7 +124,7 @@ function createWindow () {
     const pLoadingHeight = 600;
     const pCenterX = Math.floor((width - pLoadingWidth) / 2);
     const pCenterY = Math.floor((height - pLoadingHeight) / 2);
-    const popupWindow = new BrowserWindow({
+    /*const popupWindow = new BrowserWindow({
       x: pCenterX,
       y: pCenterY,
       width: pLoadingWidth,
@@ -159,7 +163,7 @@ function createWindow () {
         popupWindow.setAlwaysOnTop(false);
         popupWindow.setKiosk(false);
       }, 200);
-    });
+    });*/
   };
 
   // Listen for request from React to open URL in popup
