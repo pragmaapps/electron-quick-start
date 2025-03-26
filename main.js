@@ -53,8 +53,8 @@ function createWindow () {
   });
 
   // and load the index.html of the app.
-  //mainWindow.loadFile('index.html')
-  mainWindow.loadURL('http://192.168.0.100')
+  mainWindow.loadFile('index.html')
+  //mainWindow.loadURL('http://192.168.0.100')
   //mainWindow.setFullScreen(true)
   mainWindow.maximize()
   // Open the DevTools.
@@ -64,9 +64,12 @@ function createWindow () {
   // Function to open a popup window for external URL
   const openPopup = (url, features) => {
      // Create a small loading window
+     let { width, height } = screen.getPrimaryDisplay().workAreaSize;
     const loadingWindow = new BrowserWindow({
-      width: 200,
-      height: 100,
+      width: width,
+      height: height,
+      x: 20,
+      y: 20,
       frame: false,
       alwaysOnTop: true,
       center: true,
@@ -83,8 +86,10 @@ function createWindow () {
       loadingWindow.show();
       setTimeout(() => {
         loadingWindow.setBounds({ 
-          width:500,
-          height:300
+          x: 20,
+          y: 20,
+          width: width,
+          height: height
         });
       }, 100);
     });
@@ -99,8 +104,6 @@ function createWindow () {
         featureObject[key.trim()] = parseInt(value.trim(), 10);
       });
     }
-
-    let { width, height } = screen.getPrimaryDisplay().workAreaSize;
 
     const popupWindow = new BrowserWindow({
       width,
@@ -140,7 +143,7 @@ function createWindow () {
         popupWindow.setMovable(true);
         popupWindow.setAlwaysOnTop(false);
         popupWindow.setKiosk(false);
-      }, 500);
+      }, 800);
     });
   };
 
