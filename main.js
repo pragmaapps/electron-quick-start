@@ -65,8 +65,9 @@ function createWindow () {
   const openPopup = (url, features) => {
     // Create a small loading window
     let { width, height } = screen.getPrimaryDisplay().workAreaSize;
-    const loadingWidth = width-50;
-    const loadingHeight = height-50;
+    const loadingWidth = width-10;
+    const loadingHeight = height-10;
+    console.log("loading width and height",loadingWidth, loadingHeight );
     const centerX = Math.floor((width - loadingWidth) / 2);
     const centerY = Math.floor((height - loadingHeight) / 2);
     const loadingWindow = new BrowserWindow({
@@ -117,8 +118,9 @@ function createWindow () {
         featureObject[key.trim()] = parseInt(value.trim(), 10);
       });
     }
-    const pLoadingWidth = width-50;
-    const pLoadingHeight = height-50;
+    const pLoadingWidth = width-10;
+    const pLoadingHeight = height-10;
+    console.log("ploading width and height",pLoadingWidth, pLoadingHeight );
     const pCenterX = Math.floor((width - pLoadingWidth) / 2);
     const pCenterY = Math.floor((height - pLoadingHeight) / 2);
     const popupWindow = new BrowserWindow({
@@ -128,14 +130,13 @@ function createWindow () {
       height: pLoadingHeight,
       frame: true,
       kiosk: false,
-      resizable: true,
-      movable: true,
       alwaysOnTop: false,
       type: 'normal',
       show:false, 
       webPreferences: {
         nodeIntegration: false,
-        contextIsolation: true
+        contextIsolation: true,
+        scrollBounce: false
       },
       // Add these Wayland-specific options
       backgroundColor: '#000000',
@@ -155,8 +156,6 @@ function createWindow () {
           width: pLoadingWidth,
           height: pLoadingHeight
         });
-        popupWindow.setResizable(true);
-        popupWindow.setMovable(true);
         popupWindow.setAlwaysOnTop(false);
         popupWindow.setKiosk(false);
       }, 100);
