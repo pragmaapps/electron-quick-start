@@ -65,8 +65,8 @@ function createWindow () {
   const openPopup = (url, features) => {
     // Create a small loading window
     let { width, height } = screen.getPrimaryDisplay().workAreaSize;
-    const loadingWidth = width-100;
-    const loadingHeight = height-100;
+    const loadingWidth = width-50;
+    const loadingHeight = height-50;
     const centerX = Math.floor((width - loadingWidth) / 2);
     const centerY = Math.floor((height - loadingHeight) / 2);
     const loadingWindow = new BrowserWindow({
@@ -117,8 +117,8 @@ function createWindow () {
         featureObject[key.trim()] = parseInt(value.trim(), 10);
       });
     }
-    const pLoadingWidth = width-100;
-    const pLoadingHeight = height-100;
+    const pLoadingWidth = width-50;
+    const pLoadingHeight = height-50;
     const pCenterX = Math.floor((width - pLoadingWidth) / 2);
     const pCenterY = Math.floor((height - pLoadingHeight) / 2);
     const popupWindow = new BrowserWindow({
