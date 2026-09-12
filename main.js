@@ -1,8 +1,63 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, ipcMain,screen } = require('electron')
 const path = require('node:path')
+const fs = require('node:fs')
+
+const CONSOLE_LEVEL_NAMES = ['DEBUG', 'INFO', 'WARNING', 'ERROR']
+
+function resolveConsoleLogPath () {
+  if (process.env.KIOSK_CONSOLE_LOG) {
+    return process.env.KIOSK_CONSOLE_LOG
+  }
+  return path.join(app.getPath('userData'), 'logs', 'frontend-kiosk-console.log')
+}
+
+function createConsoleLogWriter () {
+  const logPath = resolveConsoleLogPath()
+  fs.mkdirSync(path.dirname(logPath), { recursive: true })
+  const stream = fs.createWriteStream(logPath, { flags: 'a' })
+  stream.write(`\n--- kiosk console log started ${new Date().toISOString()} path=${logPath} ---\n`)
+  return {
+    path: logPath,
+    write (line) {
+      stream.write(`${line}\n`)
+    }
+  }
+}
+
+function attachConsoleLogging (webContents, logWriter) {
+  webContents.on('console-message', (event, level, message, line, sourceId) => {
+    // Electron 32+ may pass a details object as the second argument.
+    let lvl = level
+    let msg = message
+    let ln = line
+    let src = sourceId
+    if (level && typeof level === 'object') {
+      lvl = level.level
+      msg = level.message
+      ln = level.lineNumber ?? level.line
+      src = level.sourceId
+    }
+    const levelName = typeof lvl === 'string'
+      ? lvl.toUpperCase()
+      : (CONSOLE_LEVEL_NAMES[lvl] || String(lvl))
+    logWriter.write(`[${new Date().toISOString()}] [${levelName}] ${src || ''}:${ln ?? ''} ${msg}`)
+  })
+}
+
+let consoleLogWriter = null
+
+function getConsoleLogWriter () {
+  if (!consoleLogWriter) {
+    consoleLogWriter = createConsoleLogWriter()
+    console.log('[kiosk-console-log] writing to', consoleLogWriter.path)
+  }
+  return consoleLogWriter
+}
 
 function createWindow () {
+  const logWriter = getConsoleLogWriter()
+
   // Create the browser window.
   // Get the primary display's size
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
@@ -22,6 +77,9 @@ function createWindow () {
       additionalArguments: ['--disable-dev-shm-usage']
     }
   })
+
+  attachConsoleLogging(mainWindow.webContents, logWriter)
+
   // Prevent default shortcuts
   mainWindow.webContents.on('before-input-event', (event, input) => {
     if (input.type === 'keyDown') {
@@ -144,6 +202,7 @@ function createWindow () {
       titleBarStyle: 'default',
       autoHideMenuBar: false
     });
+    attachConsoleLogging(popupWindow.webContents, logWriter)
     popupWindow.loadURL(url);
     popupWindow.once('ready-to-show', () => {
       popupWindow.show();
