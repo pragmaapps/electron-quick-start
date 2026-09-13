@@ -3,7 +3,8 @@ const { app, BrowserWindow, ipcMain,screen } = require('electron')
 const path = require('node:path')
 const fs = require('node:fs')
 
-const CONSOLE_LEVEL_NAMES = ['DEBUG', 'INFO', 'WARNING', 'ERROR']
+//const CONSOLE_LEVEL_NAMES = ['DEBUG', 'INFO', 'WARNING', 'ERROR']
+const CONSOLE_LEVEL_NAMES = ['INFO', 'WARNING', 'ERROR']
 
 function resolveConsoleLogPath () {
   if (process.env.KIOSK_CONSOLE_LOG) {
@@ -192,6 +193,7 @@ function createWindow () {
       type: 'normal',
       show:false, 
       webPreferences: {
+        preload: path.join(__dirname, 'preload.js'),
         nodeIntegration: false,
         contextIsolation: true,
         scrollBounce: false
