@@ -3,8 +3,22 @@ const { app, BrowserWindow, ipcMain,screen } = require('electron')
 const path = require('node:path')
 const fs = require('node:fs')
 
-//const CONSOLE_LEVEL_NAMES = ['DEBUG', 'INFO', 'WARNING', 'ERROR']
-const CONSOLE_LEVEL_NAMES = ['INFO', 'WARNING', 'ERROR']
+// Electron console-message levels are always: 0=debug, 1=info, 2=warning, 3=error
+const ELECTRON_LEVEL_NAMES = ['DEBUG', 'INFO', 'WARNING', 'ERROR']
+
+// Levels written to the log file (DEBUG is dropped by default).
+// Override with: KIOSK_CONSOLE_LEVEL_NAMES=INFO,WARNING,ERROR
+const DEFAULT_ENABLED_CONSOLE_LEVELS = ['INFO', 'WARNING', 'ERROR']
+
+function resolveEnabledConsoleLevels () {
+  const raw = process.env.KIOSK_CONSOLE_LEVEL_NAMES
+  if (raw && raw.trim()) {
+    return new Set(raw.split(',').map((name) => name.trim().toUpperCase()).filter(Boolean))
+  }
+  return new Set(DEFAULT_ENABLED_CONSOLE_LEVELS)
+}
+
+const ENABLED_CONSOLE_LEVELS = resolveEnabledConsoleLevels()
 
 function resolveConsoleLogPath () {
   if (process.env.KIOSK_CONSOLE_LOG) {
@@ -41,7 +55,10 @@ function attachConsoleLogging (webContents, logWriter) {
     }
     const levelName = typeof lvl === 'string'
       ? lvl.toUpperCase()
-      : (CONSOLE_LEVEL_NAMES[lvl] || String(lvl))
+      : (ELECTRON_LEVEL_NAMES[lvl] || String(lvl))
+    if (!ENABLED_CONSOLE_LEVELS.has(levelName)) {
+      return
+    }
     logWriter.write(`[${new Date().toISOString()}] [${levelName}] ${src || ''}:${ln ?? ''} ${msg}`)
   })
 }
