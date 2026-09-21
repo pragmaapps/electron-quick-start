@@ -34,7 +34,7 @@ function createConsoleLogWriter () {
   stream.write(`\n--- kiosk console log started ${new Date().toISOString()} path=${logPath} ---\n`)
   return {
     path: logPath,
-    write (line) {
+    write (line) { 
       stream.write(`${line}\n`)
     }
   }
@@ -59,7 +59,7 @@ function attachConsoleLogging (webContents, logWriter) {
     if (!ENABLED_CONSOLE_LEVELS.has(levelName)) {
       return
     }
-    logWriter.write(`[${new Date().toISOString()}] [${levelName}] ${src || ''}:${ln ?? ''} ${msg}`)
+    logWriter.write(`[${Date.now()}] [${levelName}] ${src || ''}:${ln ?? ''} ${msg}`)
   })
 }
 
